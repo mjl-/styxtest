@@ -1,0 +1,79 @@
+# status
+
+usable, but has rough edges.  no documentation yet.
+
+
+# intro
+
+programs to help test styx/9p servers for correct behaviour.
+
+file servers are not hard to write, but there are some corner cases
+that need to be handled correctly.  styxtest checks whether a
+styxserver (reachable by dial(2)) reacts properly to styx requests.
+styxtest also checks things that are handled by styxservers.m, not
+all styx servers use that library.
+
+to use styxtest, run it with an address address as parameter.  this
+will perform only basic tests.  several command-line parameters allow
+you to specify paths that styxtest will perform styx messages
+on, such as reads, writes, stats.  for example:
+
+	styxtest net!localhost!1234 nosuchfile does/not/exist createfile newfile createdir newdir file testfile dir testdir
+
+the full table and requirements for the the file (plain file) or
+directory:
+
+key             value
+---------------------
+createfile	name of file (not full path!) that does not exist and can be created and removed.
+createdir	like createfile.
+unremovablefile	path to plain file that exists and cannot be removed.
+unremovabledir	like unremovablefile.
+nosuchfile	path to non-existent file.
+file		plain existing file that has read permissions.
+filero		plain existing file with read-only (not write) permission.
+filew		plain existing file with at least write permission.
+filex		plain existing file with at least read & execute permission.
+filenoperm	plain existing file with no permission.
+filenonempty	plain existing file with read permission of at least 2 bytes.
+dir		existing directory with read permission.
+dirw		existing directory with at least write permission.
+
+some styx servers might need to be tested for extra (sequences of)
+styx messages.  others might need fewer tests.  modifying the
+styxtest.b (the source code) seems the appropriate way to do this.
+each test is very straight-forward in limbo code, implementing a
+language to write tests in (specifying styx messages to write and
+expect) does not seem worth the trouble.
+
+
+# install
+
+install package "util" first.
+
+first, ensure a "mkconfig" file is present.  a bind/symlink to the
+mkconfig of your inferno install should do.  now "mk" and "mk
+install" to compile and install the files.
+
+when building from within inferno, insert SYSHOST=Inferno and ROOT=
+in the mk invocations to override the values in the mkconfig.
+
+
+# latest version
+
+the latest version can be found at:
+
+    http://www.ueber.net/code/r/styxtest
+
+
+# licence & author
+
+all files are in the public domain.  this code has been written by
+mechiel lukkien, reachable at mechiel@ueber.net or mechiel@xs4all.nl.
+
+
+# todo
+
+- test ORCLOSE
+- test whether stat returns length 0 after open with OTRUNC?
+- test concurrent operations on fid, e.g. two reads/writes.  flush too then (for asynchronous styx servers).

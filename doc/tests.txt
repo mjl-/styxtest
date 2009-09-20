@@ -1,0 +1,47 @@
+some tests:
+
+- Walk,Open,Create,Read,Write,Clunk,Stat,Remove,Wstat: send bogus fids not in use.
+
+- Version: send tag other than NOTAG
+- Version: bogus msize
+- Version: send various bogus versions
+- Version: send msize, then send a message that is too big
+- Version: send msize, then read/write data that doesn't fit in msize
+
+- Flush: bogus tag
+- Flush: try for valid tag (needs async server)
+
+- Walk: bad chars in names (slash, more?)
+- Walk: same fid for old and new
+- Walk: send bogus in-use new fid
+- Walk: walk to . and .. too, only those or as part of more
+- Walk: send more than allowed names?
+- Walk: walk from file to other file (invalid)
+- Walk: walk from dir to other file (valid)
+- Walk: walk from an opened directory (invalid)
+
+- Open: invalid bits in mode
+- Open: open an already opened fid
+
+- Create: bad name
+- Create: bad bits in permission?
+- Create: bad bits in mode
+- Create: test create of existing file (should fail)
+- Create: create from an open fid
+
+- Read: read at offset 0, read 0 bytes, read past offset.  read more than allowed by msize.  could read at negative offset (for limbo)
+- Read: directory,file
+
+- Write: write at negative offset (for limbo).  write 0 bytes.  send message larger han msize.
+
+- Clunk,Stat,Remove: on open/closed fid, file/directory
+
+- Remove: remove with error (e.g. no permission), than verify fid has been clunked.
+- Remove: after clunk, ensure fid is gone.
+
+- Wstat: null, for committing to disk
+- Wstat: name only
+- Wstat: various bits only
+- Wstat: various bogus bits, e.g. changing a dir into non-dir and vice-versa.
+
+- send bogus message (invalid), see how remote handles that.  probably closes connection.  should inspect that styx server doesn't crash.
