@@ -49,11 +49,8 @@ expect) does not seem worth the trouble.
 
 # install
 
-install package "util" first.
-
-first, ensure a "mkconfig" file is present.  a bind/symlink to the
-mkconfig of your inferno install should do.  now "mk" and "mk
-install" to compile and install the files.
+modify "mkconfig" or make sure $ROOT is set.  run "mk" and
+"mk install" to compile and install the files.
 
 when building from within inferno, insert SYSHOST=Inferno and ROOT=
 in the mk invocations to override the values in the mkconfig.
@@ -69,7 +66,7 @@ the latest version can be found at:
 # licence & author
 
 all files are in the public domain.  this code has been written by
-mechiel lukkien, reachable at mechiel@ueber.net or mechiel@xs4all.nl.
+mechiel lukkien, reachable at mechiel@ueber.net.
 
 
 # todo

@@ -6,10 +6,9 @@ TARG=\
 SYSMODULES=\
 	arg.m\
 	draw.m\
-	string.m\
+	dial.m\
 	styx.m\
 	sys.m\
-	util0.m\
 
 DISBIN=$ROOT/dis
 

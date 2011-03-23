@@ -8,12 +8,11 @@ include "sys.m";
 	DMDIR, DMAPPEND, DMEXCL, DMAUTH, DMTMP: import sys;
 include "draw.m";
 include "arg.m";
+include "dial.m";
+	dial: Dial;
 include "styx.m";
 	styx: Styx;
 	Rmsg, Tmsg: import styx;
-include "util0.m";
-	util: Util0;
-	l2a, fail, warn, p32: import util;
 
 Styxtest: module {
 	init:	fn(nil: ref Draw->Context, args: list of string);
@@ -49,10 +48,9 @@ init(nil: ref Draw->Context, args: list of string)
 {
 	sys = load Sys Sys->PATH;
 	arg := load Arg Arg->PATH;
+	dial = load Dial Dial->PATH;
 	styx = load Styx Styx->PATH;
 	styx->init();
-	util = load Util0 Util0->PATH;
-	util->init();
 
 	arg->init(args);
 	arg->setusage(arg->progname()+" [-d] addr [key value ...]");
@@ -64,7 +62,7 @@ init(nil: ref Draw->Context, args: list of string)
 	args = arg->argv();
 	if(len args % 2 != 1)
 		arg->usage();
-	addr = hd args;
+	addr = dial->netmkaddr(hd args, "net", "styx");
 	for(args = tl args; args != nil; args = tl tl args) {
 		a := hd tl args;
 		case hd args {
@@ -656,10 +654,10 @@ checkreaddir(d: array of byte)
 
 edial(): ref Sys->FD
 {
-	(ok, conn) := sys->dial(addr, nil);
-	if(ok != 0)
+	c := dial->dial(addr, nil);
+	if(c == nil)
 		fail(sprint("dial %q: %r", addr));
-	return conn.dfd;
+	return c.dfd;
 }
 
 edialattach(): (int, int, ref Sys->FD)
@@ -901,8 +899,30 @@ header(s: string)
 	warn(s);
 }
 
-say(s: string)
+l2a[T](l: list of T): array of T
 {
-	if(dflag)
-		warn(s);
+	a := array[len l] of T;
+	i := 0;
+	for(; l != nil; l = tl l)
+		a[i++] = hd l;
+	return a;
+}
+
+p32(d: array of byte, o: int, v: big)
+{
+	d[o++] = byte (v>>0);
+	d[o++] = byte (v>>8);
+	d[o++] = byte (v>>16);
+	d[o++] = byte (v>>24);
+}
+
+warn(s: string)
+{
+	sys->fprint(sys->fildes(2), "%s\n", s);
+}
+
+fail(s: string)
+{
+	warn(s);
+	raise "fail:"+s;
 }
